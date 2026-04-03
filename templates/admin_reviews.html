@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Manage Reviews - Admin{% endblock %}
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <div class="admin-sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 30px;">👑 ADMIN</div>
+        <nav>
+            <a href="/admin/dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/users" class="nav-item"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin/plans" class="nav-item"><i class="fas fa-boxes"></i> Plans</a>
+            <a href="/admin/orders" class="nav-item"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="/admin/vps-setup" class="nav-item"><i class="fas fa-server"></i> VPS Setup</a>
+            <a href="/admin/ptero-setup" class="nav-item"><i class="fas fa-gamepad"></i> Ptero Setup</a>
+            <a href="/admin/create-user" class="nav-item"><i class="fas fa-user-plus"></i> Create User</a>
+            <a href="/admin/reviews" class="nav-item active"><i class="fas fa-star"></i> Reviews</a>
+            <a href="/admin/settings" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/logs" class="nav-item"><i class="fas fa-history"></i> Logs</a>
+        </nav>
+        <button class="btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Logout</button>
+    </div>
+    
+    <div class="admin-content">
+        <h1 style="margin-bottom: 30px;">⭐ Manage Customer Reviews</h1>
+        
+        <div class="glass-card" style="padding: 20px;">
+            {% for review in reviews %}
+            <div style="padding: 20px; border-bottom: 1px solid rgba(99,102,241,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <div style="font-size: 1.2rem;">{{ review.user_name }} <span style="font-size: 0.8rem;">({{ review.user_avatar }})</span></div>
+                        <div>{% for i in range(review.rating) %}⭐{% endfor %}</div>
+                        <div style="margin-top: 10px;">"{{ review.comment }}"</div>
+                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 10px;">Product: {{ review.product }} | Date: {{ review.date }}</div>
+                    </div>
+                    <div>
+                        {% if not review.approved %}
+                        <button class="btn-success" style="padding: 8px 16px;" onclick="approveReview('{{ review.id }}')">✓ Approve</button>
+                        {% else %}
+                        <span class="badge badge-success">Approved</span>
+                        {% endif %}
+                        <button class="btn-danger" style="padding: 8px 16px; margin-left: 10px;" onclick="deleteReview('{{ review.id }}')">🗑 Delete</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+async function approveReview(reviewId) {
+    const result = await apiCall(`/api/admin/reviews/${reviewId}/approve`, 'PUT', {});
+    if (result.success) { showToast('Review approved!'); setTimeout(() => location.reload(), 1000); }
+    else showToast(result.message, 'error');
+}
+
+async function deleteReview(reviewId) {
+    if(confirm('Delete this review?')) {
+        const result = await apiCall(`/api/admin/reviews/${reviewId}`, 'DELETE', {});
+        if (result.success) { showToast('Review deleted!'); setTimeout(() => location.reload(), 1000); }
+        else showToast(result.message, 'error');
+    }
+}
+</script>
+{% endblock %}
