@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Forgot Password - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="glass-card" style="max-width: 450px; width: 100%; padding: 40px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 3rem;">🔒</div>
+            <h1 style="font-size: 2rem;">Reset Password</h1>
+            <p style="color: #a5b4fc;">Enter your email to receive reset instructions</p>
+        </div>
+        <form id="forgotForm">
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Email Address</label>
+                <input type="email" id="email" class="input-modern" placeholder="user@example.com" required>
+            </div>
+            <button type="submit" class="btn-neon" style="width: 100%;">Send Reset Link →</button>
+        </form>
+        <p style="text-align: center; margin-top: 25px;">
+            <a href="/login" style="color: #a855f7; text-decoration: none;">← Back to Login</a>
+        </p>
+    </div>
+</div>
+<script>
+document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const result = await apiCall('/api/forgot-password', 'POST', { email: document.getElementById('email').value });
+    if (result.success) { showToast(result.message || 'Reset instructions sent!'); setTimeout(() => { window.location.href = '/login'; }, 2000); }
+    else { showToast(result.message, 'error'); }
+});
+</script>
+{% endblock %}
