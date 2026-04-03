@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Bot Plans - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(10,10,26,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;">
+    <a href="/" style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #8b5cf6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">
+        🤖 BOT HOSTING
+    </a>
+    <div style="display: flex; gap: 20px;">
+        <a href="/dashboard" style="color: #a5b4fc; text-decoration: none;">← Back to Dashboard</a>
+        <button class="btn-outline" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div style="padding: 40px 5%; max-width: 1400px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 15px;">🤖 Discord Bot Hosting</h1>
+        <p style="color: #a5b4fc;">24/7 hosting for your Discord bots with 99.99% uptime</p>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+            <span class="badge badge-success"><i class="fas fa-check"></i> 24/7 Uptime</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> DDoS Protection</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> Python/JS Support</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> Web Dashboard</span>
+        </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+        {% for plan in bot_plans if plan.enabled %}
+        <div class="glass-card plan-card" style="padding: 30px; position: relative; {% if plan.popular %}border: 2px solid #8b5cf6;{% endif %}">
+            {% if plan.popular %}<div class="popular-badge" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #8b5cf6, #a855f7); padding: 4px 16px; border-radius: 20px; font-size: 0.7rem;">🤖 POPULAR</div>{% endif %}
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 3rem;">🤖</div>
+                <div style="font-size: 1.8rem; font-weight: 700; margin-top: 10px;">{{ plan.name }}</div>
+                <div style="font-size: 2.5rem; font-weight: 800; margin-top: 10px;">{{ get_price_for_location(plan).price }}<span style="font-size: 1rem;">/mo</span></div>
+            </div>
+            
+            <ul class="feature-list" style="list-style: none; margin: 20px 0; padding: 0;">
+                <li style="padding: 10px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-microchip" style="width: 30px; color: #8b5cf6;"></i> {{ plan.cpu }}</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-memory" style="width: 30px; color: #8b5cf6;"></i> {{ plan.ram }} DDR5</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-hdd" style="width: 30px; color: #8b5cf6;"></i> {{ plan.storage }} NVMe</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-robot" style="width: 30px; color: #8b5cf6;"></i> {{ plan.servers }} Servers Supported</li>
+                <li style="padding: 10px 0;"><i class="fas fa-code" style="width: 30px; color: #8b5cf6;"></i> Python, JavaScript, Java</li>
+            </ul>
+            
+            <div style="background: rgba(139,92,246,0.1); padding: 12px; border-radius: 12px; margin: 15px 0;">
+                <p style="font-size: 0.85rem;"><i class="fas fa-check-circle" style="color: #8b5cf6;"></i> Includes: Auto-restart, Logs, Web Control Panel</p>
+            </div>
+            
+            <button class="btn-neon" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #8b5cf6, #a855f7);" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'bot', '{{ plan.location }}')">
+                🚀 Deploy Bot Now
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Supported Languages -->
+    <div class="glass" style="padding: 30px; margin-top: 50px; text-align: center;">
+        <h3 style="margin-bottom: 20px;">💻 Supported Bot Languages</h3>
+        <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+            <div><i class="fab fa-python" style="font-size: 2rem; color: #3776ab;"></i><div>Python</div></div>
+            <div><i class="fab fa-js" style="font-size: 2rem; color: #f7df1e;"></i><div>JavaScript</div></div>
+            <div><i class="fab fa-java" style="font-size: 2rem; color: #007396;"></i><div>Java</div></div>
+            <div><i class="fas fa-code" style="font-size: 2rem; color: #10b981;"></i><div>Node.js</div></div>
+        </div>
+    </div>
+</div>
+
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 20px;">🤖 Confirm Bot Order</h2>
+        <div id="orderDetails"></div>
+        <div id="paymentMethods" style="margin: 20px 0;"></div>
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn-neon" onclick="confirmOrder()">Proceed to Payment ✅</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentOrder = null;
+
+function buyNow(planId, planName, planType, location) {
+    currentOrder = { planId, planName, planType, location };
+    document.getElementById('orderDetails').innerHTML = `
+        <p><strong>Plan:</strong> ${planName}</p>
+        <p><strong>Type:</strong> Discord Bot Hosting</p>
+        <p><strong>Location:</strong> ${getLocationName(location)}</p>
+        <p><strong>Uptime:</strong> 99.99% Guaranteed</p>
+    `;
+    document.getElementById('paymentMethods').innerHTML = `
+        <div style="background: rgba(99,102,241,0.1); padding: 15px; border-radius: 12px;">
+            <p><i class="fas fa-mobile-alt"></i> <strong>UPI:</strong> {{ payment_details.upi.id }}</p>
+            <p><i class="fas fa-university"></i> <strong>Bank Transfer:</strong> {{ payment_details.bank_transfer.account_name }}</p>
+            <p><i class="fab fa-bitcoin"></i> <strong>Crypto:</strong> BTC, ETH, LTC, USDT accepted</p>
+        </div>
+    `;
+    document.getElementById('cartModal').style.display = 'flex';
+}
+
+function getLocationName(locationId) {
+    const locations = {
+        'us_east': '🇺🇸 US East', 'us_west': '🇺🇸 US West',
+        'eu_central': '🇪🇺 EU Central', 'asia_south': '🇮🇳 Asia South'
+    };
+    return locations[locationId] || '🌍 Global';
+}
+
+async function confirmOrder() {
+    const result = await apiCall('/api/create-order', 'POST', {
+        plan_id: currentOrder.planId,
+        plan_name: currentOrder.planName,
+        plan_type: currentOrder.planType,
+        location: currentOrder.location
+    });
+    if (result.success) {
+        const confirm = await apiCall(`/api/confirm-order/${result.order_id}`, 'POST', {});
+        if (confirm.success) {
+            showToast('✅ Bot hosting ordered! Waiting for approval.');
+            closeModal();
+            setTimeout(() => { window.location.href = '/dashboard'; }, 2000);
+        }
+    } else {
+        showToast(result.message || 'Error creating order', 'error');
+    }
+}
+
+function closeModal() {
+    document.getElementById('cartModal').style.display = 'none';
+    currentOrder = null;
+}
+</script>
+{% endblock %}
