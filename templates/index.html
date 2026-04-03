@@ -212,4 +212,79 @@
     </div>
 </section>
 
-<footer style="padding: 50px 5% 30px; border-top: 1px solid rgba
+<footer style="padding: 50px 5% 30px; border-top: 1px solid rgba(99,102,241,0.2); text-align: center;">
+    <p>{{ settings.footer_text }}</p>
+    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+        <a href="#" style="color: #a5b4fc; text-decoration: none;">Terms</a>
+        <a href="#" style="color: #a5b4fc; text-decoration: none;">Privacy</a>
+        <a href="#" style="color: #a5b4fc; text-decoration: none;">Contact</a>
+        <a href="{{ settings.discord_invite }}" style="color: #a5b4fc; text-decoration: none;">Discord</a>
+    </div>
+</footer>
+
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 20px;">🛒 Confirm Order</h2>
+        <div id="orderDetails"></div>
+        <div id="paymentMethods" style="margin: 20px 0;"></div>
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn-neon" onclick="confirmOrder()">Proceed to Payment ✅</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentOrder = null;
+
+function buyNow(planId, planName, planType, location) {
+    currentOrder = { planId, planName, planType, location };
+    const price = "{{ get_price_for_location({'raw_price_usd': 0}).price }}".replace('₹', '').replace('$', '');
+    document.getElementById('orderDetails').innerHTML = `
+        <p><strong>Plan:</strong> ${planName}</p>
+        <p><strong>Type:</strong> ${planType.toUpperCase()}</p>
+        <p><strong>Location:</strong> ${location ? getLocationName(location) : 'Global'}</p>
+    `;
+    document.getElementById('paymentMethods').innerHTML = `
+        <div style="background: rgba(99,102,241,0.1); padding: 15px; border-radius: 12px;">
+            <p><i class="fas fa-mobile-alt"></i> <strong>UPI:</strong> {{ payment_details.upi.id }}</p>
+            <p><i class="fas fa-university"></i> <strong>Bank:</strong> {{ payment_details.bank_transfer.account_name }}</p>
+            <p><i class="fab fa-bitcoin"></i> <strong>Crypto:</strong> BTC • ETH • LTC available</p>
+        </div>
+    `;
+    document.getElementById('cartModal').style.display = 'flex';
+}
+
+function getLocationName(locationId) {
+    const locations = {
+        'us_east': '🇺🇸 US East', 'us_west': '🇺🇸 US West', 'eu_central': '🇪🇺 EU Central',
+        'asia_south': '🇮🇳 Asia South', 'asia_east': '🇸🇬 Asia East', 'au_south': '🇦🇺 Australia'
+    };
+    return locations[locationId] || 'US East';
+}
+
+async function confirmOrder() {
+    const result = await apiCall('/api/create-order', 'POST', {
+        plan_id: currentOrder.planId,
+        plan_name: currentOrder.planName,
+        plan_type: currentOrder.planType,
+        location: currentOrder.location
+    });
+    if (result.success) {
+        const confirm = await apiCall(`/api/confirm-order/${result.order_id}`, 'POST', {});
+        if (confirm.success) {
+            showToast('Payment confirmed! Waiting for admin approval.');
+            closeModal();
+            setTimeout(() => { window.location.href = '/dashboard'; }, 2000);
+        }
+    } else {
+        showToast(result.message || 'Error creating order', 'error');
+    }
+}
+
+function closeModal() {
+    document.getElementById('cartModal').style.display = 'none';
+    currentOrder = null;
+}
+</script>
+{% endblock %}
