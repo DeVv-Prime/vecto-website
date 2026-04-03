@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Maintenance - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+    <div>
+        <div style="font-size: 5rem;">🔧</div>
+        <h1 style="font-size: 2rem; margin: 20px 0;">Under Maintenance</h1>
+        <p style="color: #a5b4fc; margin-bottom: 30px;">We're currently upgrading our infrastructure. Please check back soon!</p>
+        <div class="glass" style="padding: 15px; display: inline-block;">
+            <i class="fas fa-clock"></i> Estimated completion: 2-3 hours
+        </div>
+    </div>
+</div>
+{% endblock %}
