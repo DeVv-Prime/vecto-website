@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Manage Plans - Admin{% endblock %}
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <div class="admin-sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 30px;">👑 ADMIN</div>
+        <nav>
+            <a href="/admin/dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/users" class="nav-item"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin/plans" class="nav-item active"><i class="fas fa-boxes"></i> Plans</a>
+            <a href="/admin/orders" class="nav-item"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="/admin/vps-setup" class="nav-item"><i class="fas fa-server"></i> VPS Setup</a>
+            <a href="/admin/ptero-setup" class="nav-item"><i class="fas fa-gamepad"></i> Ptero Setup</a>
+            <a href="/admin/create-user" class="nav-item"><i class="fas fa-user-plus"></i> Create User</a>
+            <a href="/admin/reviews" class="nav-item"><i class="fas fa-star"></i> Reviews</a>
+            <a href="/admin/settings" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/logs" class="nav-item"><i class="fas fa-history"></i> Logs</a>
+        </nav>
+        <button class="btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Logout</button>
+    </div>
+    
+    <div class="admin-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1>📦 Plan Management</h1>
+            <button class="btn-neon" onclick="showAddPlanModal()"><i class="fas fa-plus"></i> Add New Plan</button>
+        </div>
+        
+        <div class="glass-card" style="padding: 20px;">
+            <h3>💻 VPS Basic Plans</h3>
+            <table style="width: 100%; margin-bottom: 30px;">
+                <thead><tr><th>Name</th><th>RAM</th><th>CPU</th><th>Storage</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for plan in vps_basic_plans %}
+                    <tr><td>{{ plan.name }}</td><td>{{ plan.ram }}</td><td>{{ plan.cpu }}</td><td>{{ plan.storage }}</td><td>{{ plan.price }}</td>
+                    <td><span class="badge {% if plan.enabled %}badge-success{% else %}badge-danger{% endif %}">{% if plan.enabled %}Active{% else %}Disabled{% endif %}</span></td>
+                    <td><button class="btn-outline" onclick="editPlan('vps_basic', '{{ plan.id }}')">Edit</button> <button class="btn-outline" onclick="deletePlan('vps_basic', '{{ plan.id }}')">Delete</button></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <h3>⚡ VPS Powerful Plans</h3>
+            <table style="width: 100%; margin-bottom: 30px;">
+                <thead><tr><th>Name</th><th>RAM</th><th>CPU</th><th>Storage</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for plan in vps_powerful_plans %}
+                    <tr><td>{{ plan.name }}</td><td>{{ plan.ram }}</td><td>{{ plan.cpu }}</td><td>{{ plan.storage }}</td><td>{{ plan.price }}</td>
+                    <td><span class="badge {% if plan.enabled %}badge-success{% else %}badge-danger{% endif %}">{% if plan.enabled %}Active{% else %}Disabled{% endif %}</span></td>
+                    <td><button class="btn-outline" onclick="editPlan('vps_powerful', '{{ plan.id }}')">Edit</button> <button class="btn-outline" onclick="deletePlan('vps_powerful', '{{ plan.id }}')">Delete</button></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <h3>💎 VPS Elite Plans</h3>
+            <table style="width: 100%; margin-bottom: 30px;">
+                <thead><tr><th>Name</th><th>RAM</th><th>CPU</th><th>Storage</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for plan in vps_elite_plans %}
+                    <tr><td>{{ plan.name }}</td><td>{{ plan.ram }}</td><td>{{ plan.cpu }}</td><td>{{ plan.storage }}</td><td>{{ plan.price }}</td>
+                    <td><span class="badge {% if plan.enabled %}badge-success{% else %}badge-danger{% endif %}">{% if plan.enabled %}Active{% else %}Disabled{% endif %}</span></td>
+                    <td><button class="btn-outline" onclick="editPlan('vps_elite', '{{ plan.id }}')">Edit</button> <button class="btn-outline" onclick="deletePlan('vps_elite', '{{ plan.id }}')">Delete</button></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="addPlanModal" class="modal">
+    <div class="modal-content"><h2>Add New Plan</h2>
+        <select id="planType" class="input-modern"><option value="vps_basic">VPS Basic</option><option value="vps_powerful">VPS Powerful</option><option value="vps_elite">VPS Elite</option><option value="mc">Minecraft</option><option value="bot">Bot</option><option value="discord">Discord</option></select>
+        <input type="text" id="planName" class="input-modern" placeholder="Plan Name" style="margin-top: 10px;">
+        <input type="text" id="planRam" class="input-modern" placeholder="RAM" style="margin-top: 10px;">
+        <input type="text" id="planCpu" class="input-modern" placeholder="CPU" style="margin-top: 10px;">
+        <input type="text" id="planStorage" class="input-modern" placeholder="Storage" style="margin-top: 10px;">
+        <input type="text" id="planPrice" class="input-modern" placeholder="Price (e.g., $9.99)" style="margin-top: 10px;">
+        <button class="btn-neon" onclick="addPlan()" style="margin-top: 20px;">Create Plan</button>
+        <button class="btn-outline" onclick="closeAddPlanModal()" style="margin-top: 10px;">Cancel</button>
+    </div>
+</div>
+
+<script>
+function showAddPlanModal() { document.getElementById('addPlanModal').style.display = 'flex'; }
+function closeAddPlanModal() { document.getElementById('addPlanModal').style.display = 'none'; }
+
+async function addPlan() {
+    const data = {
+        name: document.getElementById('planName').value,
+        ram: document.getElementById('planRam').value,
+        cpu: document.getElementById('planCpu').value,
+        storage: document.getElementById('planStorage').value,
+        price: document.getElementById('planPrice').value,
+        enabled: true
+    };
+    const planType = document.getElementById('planType').value;
+    const result = await apiCall(`/api/admin/plans/${planType}`, 'POST', data);
+    if (result.success) { showToast('Plan added!'); closeAddPlanModal(); setTimeout(() => location.reload(), 1000); }
+    else showToast(result.message, 'error');
+}
+
+async function deletePlan(planType, planId) {
+    if(confirm('Delete this plan?')) {
+        const result = await apiCall(`/api/admin/plans/${planType}/${planId}`, 'DELETE', {});
+        if (result.success) { showToast('Plan deleted!'); setTimeout(() => location.reload(), 1000); }
+        else showToast(result.message, 'error');
+    }
+}
+
+function editPlan(planType, planId) { showToast('Edit feature - Click on plan fields to edit'); }
+</script>
+{% endblock %}
