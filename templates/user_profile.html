@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}User Profile - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(10,10,26,0.8);">
+    <a href="/" style="font-size: 1.5rem; font-weight: 800; text-decoration: none; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        {{ settings.site_name_small }}
+    </a>
+    <a href="/dashboard" style="color: #a5b4fc; text-decoration: none;">← Back to Dashboard</a>
+</nav>
+
+<div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    <div class="glass-card" style="padding: 40px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 4rem;">{{ user.avatar }}</div>
+            <h2>{{ user.username }}</h2>
+            <p style="color: #9ca3af;">{{ session['user_email'] }}</p>
+            <p>Member since: {{ user.joined }}</p>
+        </div>
+        
+        <form id="profileForm">
+            <h3>Profile Settings</h3>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px;">Username</label>
+                <input type="text" id="username" class="input-modern" value="{{ user.username }}">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px;">Avatar</label>
+                <select id="avatar" class="input-modern">
+                    <option value="👤" {% if user.avatar == '👤' %}selected{% endif %}>👤 User</option>
+                    <option value="👨‍💻" {% if user.avatar == '👨‍💻' %}selected{% endif %}>👨‍💻 Developer</option>
+                    <option value="👩‍🎮" {% if user.avatar == '👩‍🎮' %}selected{% endif %}>👩‍🎮 Gamer</option>
+                    <option value="👑" {% if user.avatar == '👑' %}selected{% endif %}>👑 Admin</option>
+                    <option value="🤖" {% if user.avatar == '🤖' %}selected{% endif %}>🤖 Bot</option>
+                    <option value="🎮" {% if user.avatar == '🎮' %}selected{% endif %}>🎮 Gamer</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-neon" style="width: 100%;">Update Profile</button>
+        </form>
+        
+        <div style="margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(99,102,241,0.2);">
+            <h3>VPS Login Details</h3>
+            <div class="glass" style="padding: 15px; margin-top: 10px;">
+                <p><strong>Username:</strong> <code>{{ user.vps_username }}</code></p>
+                <p><strong>Password:</strong> <code>{{ user.vps_password }}</code></p>
+                <p><strong>Panel URL:</strong> <code>https://vps.vecto.nodes</code></p>
+                <button class="btn-outline" onclick="copyToClipboard('{{ user.vps_username }}')">Copy Username</button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <h3>Pterodactyl Panel Login Details</h3>
+            <div class="glass" style="padding: 15px; margin-top: 10px;">
+                <p><strong>Username:</strong> <code>{{ user.ptero_username }}</code></p>
+                <p><strong>Password:</strong> <code>{{ user.ptero_password }}</code></p>
+                <p><strong>Panel URL:</strong> <code>https://panel.vecto.nodes</code></p>
+                <button class="btn-outline" onclick="copyToClipboard('{{ user.ptero_username }}')">Copy Username</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="glass-card" style="padding: 40px; margin-top: 20px;">
+        <h3>Change Password</h3>
+        <form id="passwordForm">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px;">Current Password</label>
+                <input type="password" id="current_password" class="input-modern" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px;">New Password</label>
+                <input type="password" id="new_password" class="input-modern" required>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px;">Confirm New Password</label>
+                <input type="password" id="confirm_password" class="input-modern" required>
+            </div>
+            <button type="submit" class="btn-neon" style="width: 100%;">Change Password</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text);
+    showToast('Copied to clipboard!');
+}
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const result = await apiCall('/api/update-profile', 'POST', {
+        username: document.getElementById('username').value,
+        avatar: document.getElementById('avatar').value
+    });
+    if (result.success) { showToast('Profile updated!'); setTimeout(() => location.reload(), 1000); }
+    else { showToast(result.message, 'error'); }
+});
+
+document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPass = document.getElementById('new_password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    if (newPass !== confirm) { showToast('Passwords do not match', 'error'); return; }
+    if (newPass.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+    const result = await apiCall('/api/update-profile', 'POST', {
+        current_password: document.getElementById('current_password').value,
+        new_password: newPass
+    });
+    if (result.success) { showToast('Password changed!'); document.getElementById('passwordForm').reset(); }
+    else { showToast(result.message, 'error'); }
+});
+</script>
+{% endblock %}
