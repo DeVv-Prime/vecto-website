@@ -26,4 +26,48 @@
             <div class="glass" style="padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <code id="vps_api_key">{{ api_keys.vps_api_key or 'Not generated' }}</code>
                 <button class="btn-outline" onclick="regenerateKey('vps_api_key')">Regenerate</button>
-           
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">🎮 Minecraft API Key</label>
+            <div class="glass" style="padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <code id="mc_api_key">{{ api_keys.mc_api_key or 'Not generated' }}</code>
+                <button class="btn-outline" onclick="regenerateKey('mc_api_key')">Regenerate</button>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">🤖 Bot API Key</label>
+            <div class="glass" style="padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <code id="bot_api_key">{{ api_keys.bot_api_key or 'Not generated' }}</code>
+                <button class="btn-outline" onclick="regenerateKey('bot_api_key')">Regenerate</button>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">💎 Discord API Key</label>
+            <div class="glass" style="padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <code id="discord_api_key">{{ api_keys.discord_api_key or 'Not generated' }}</code>
+                <button class="btn-outline" onclick="regenerateKey('discord_api_key')">Regenerate</button>
+            </div>
+        </div>
+        
+        <div class="glass" style="padding: 15px; margin-top: 20px; background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3);">
+            <p style="color: #ef4444; font-size: 0.85rem;"><i class="fas fa-exclamation-triangle"></i> Keep your API keys secure! Never share them publicly.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+async function regenerateKey(keyType) {
+    const result = await apiCall('/api/regenerate-api-key', 'POST', { key_type: keyType });
+    if (result.success) {
+        document.getElementById(keyType).textContent = result.api_key;
+        showToast('API key regenerated successfully!');
+    } else {
+        showToast(result.message, 'error');
+    }
+}
+</script>
+{% endblock %}
