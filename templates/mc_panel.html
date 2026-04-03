@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Minecraft Plans - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(10,10,26,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;">
+    <a href="/" style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">
+        🎮 MINECRAFT PLANS
+    </a>
+    <div style="display: flex; gap: 20px;">
+        <a href="/dashboard" style="color: #a5b4fc; text-decoration: none;">← Back to Dashboard</a>
+        <button class="btn-outline" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div style="padding: 40px 5%; max-width: 1400px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 15px;">🎮 Minecraft Server Hosting</h1>
+        <p style="color: #a5b4fc;">Ultimate performance for your Minecraft community</p>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+            <span class="badge badge-success"><i class="fas fa-check"></i> 24/7 Uptime</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> DDoS Protection</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> Mod Support</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> Free Subdomain</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> One-Click Modpacks</span>
+        </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+        {% for plan in mc_plans if plan.enabled %}
+        <div class="glass-card plan-card" style="padding: 30px; position: relative; {% if plan.popular %}border: 2px solid #10b981;{% endif %}">
+            {% if plan.popular %}<div class="popular-badge" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #10b981, #059669); padding: 4px 16px; border-radius: 20px; font-size: 0.7rem;">🔥 MOST POPULAR</div>{% endif %}
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 3rem;">🎮</div>
+                <div style="font-size: 1.8rem; font-weight: 700; margin-top: 10px;">{{ plan.name }}</div>
+                <div style="font-size: 2.5rem; font-weight: 800; margin-top: 10px;">{{ get_price_for_location(plan).price }}<span style="font-size: 1rem;">/mo</span></div>
+                <div class="badge badge-success" style="margin-top: 10px;">{{ plan.slots }} Player Slots</div>
+            </div>
+            
+            <ul class="feature-list" style="list-style: none; margin: 20px 0; padding: 0;">
+                <li style="padding: 10px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-microchip" style="width: 30px; color: #10b981;"></i> {{ plan.cpu }}</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-memory" style="width: 30px; color: #10b981;"></i> {{ plan.ram }} DDR5</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-hdd" style="width: 30px; color: #10b981;"></i> {{ plan.storage }} NVMe</li>
+                <li style="padding: 10px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-users" style="width: 30px; color: #10b981;"></i> {{ plan.slots }} Concurrent Players</li>
+                <li style="padding: 10px 0;"><i class="fas fa-map-marker-alt" style="width: 30px; color: #f59e0b;"></i> <span class="server-location">{{ get_location_name(plan.location) }}</span></li>
+            </ul>
+            
+            <div style="background: rgba(16,185,129,0.1); padding: 12px; border-radius: 12px; margin: 15px 0;">
+                <p style="font-size: 0.85rem;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Includes: Free MySQL Database, FTP Access, Subdomain</p>
+            </div>
+            
+            <button class="btn-neon" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #10b981, #059669);" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'mc', '{{ plan.location }}')">
+                🚀 Deploy Server Now
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Features Section -->
+    <div class="glass" style="padding: 40px; margin-top: 50px;">
+        <h3 style="text-align: center; margin-bottom: 30px;">✨ Premium Minecraft Features</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px;">
+            <div><i class="fas fa-cube" style="font-size: 1.5rem; color: #10b981;"></i><h4>Mod Support</h4><p style="font-size: 0.85rem;">Forge, Fabric, Bukkit, Spigot, Paper</p></div>
+            <div><i class="fas fa-database" style="font-size: 1.5rem; color: #10b981;"></i><h4>MySQL Database</h4><p style="font-size: 0.85rem;">Free database included</p></div>
+            <div><i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem; color: #10b981;"></i><h4>One-Click Modpacks</h4><p style="font-size: 0.85rem;">100+ modpacks available</p></div>
+            <div><i class="fas fa-tachometer-alt" style="font-size: 1.5rem; color: #10b981;"></i><h4>Live Console</h4><p style="font-size: 0.85rem;">Real-time server control</p></div>
+            <div><i class="fas fa-chart-line" style="font-size: 1.5rem; color: #10b981;"></i><h4>Advanced Analytics</h4><p style="font-size: 0.85rem;">Player statistics and insights</p></div>
+            <div><i class="fas fa-sync-alt" style="font-size: 1.5rem; color: #10b981;"></i><h4>Automated Backups</h4><p style="font-size: 0.85rem;">Daily backups included</p></div>
+        </div>
+    </div>
+</div>
+
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 20px;">🎮 Confirm Minecraft Order</h2>
+        <div id="orderDetails"></div>
+        <div id="paymentMethods" style="margin: 20px 0;"></div>
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn-neon" onclick="confirmOrder()">Proceed to Payment ✅</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentOrder = null;
+
+function buyNow(planId, planName, planType, location) {
+    currentOrder = { planId, planName, planType, location };
+    document.getElementById('orderDetails').innerHTML = `
+        <p><strong>Plan:</strong> ${planName}</p>
+        <p><strong>Type:</strong> Minecraft Server</p>
+        <p><strong>Location:</strong> ${getLocationName(location)}</p>
+        <p><strong>Setup Time:</strong> Instant (2-3 minutes)</p>
+        <p><strong>Features:</strong> Mod Support, DDoS Protection, Free Subdomain</p>
+    `;
+    document.getElementById('paymentMethods').innerHTML = `
+        <div style="background: rgba(99,102,241,0.1); padding: 15px; border-radius: 12px;">
+            <p><i class="fas fa-mobile-alt"></i> <strong>UPI:</strong> {{ payment_details.upi.id }}</p>
+            <p><i class="fas fa-university"></i> <strong>Bank Transfer:</strong> {{ payment_details.bank_transfer.account_name }}</p>
+            <p><i class="fab fa-bitcoin"></i> <strong>Crypto:</strong> BTC, ETH, LTC, USDT accepted</p>
+        </div>
+    `;
+    document.getElementById('cartModal').style.display = 'flex';
+}
+
+function getLocationName(locationId) {
+    const locations = {
+        'us_east': '🇺🇸 US East (Virginia)', 'us_west': '🇺🇸 US West (California)',
+        'eu_central': '🇪🇺 EU Central (Frankfurt)', 'asia_south': '🇮🇳 Asia South (Mumbai)',
+        'asia_east': '🇸🇬 Asia East (Singapore)', 'au_south': '🇦🇺 Australia (Sydney)'
+    };
+    return locations[locationId] || '🌍 Global';
+}
+
+async function confirmOrder() {
+    const result = await apiCall('/api/create-order', 'POST', {
+        plan_id: currentOrder.planId,
+        plan_name: currentOrder.planName,
+        plan_type: currentOrder.planType,
+        location: currentOrder.location
+    });
+    if (result.success) {
+        const confirm = await apiCall(`/api/confirm-order/${result.order_id}`, 'POST', {});
+        if (confirm.success) {
+            showToast('✅ Minecraft server ordered! Waiting for approval.');
+            closeModal();
+            setTimeout(() => { window.location.href = '/dashboard'; }, 2000);
+        }
+    } else {
+        showToast(result.message || 'Error creating order', 'error');
+    }
+}
+
+function closeModal() {
+    document.getElementById('cartModal').style.display = 'none';
+    currentOrder = null;
+}
+</script>
+{% endblock %}
