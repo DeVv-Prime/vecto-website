@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}My Orders - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(10,10,26,0.8);">
+    <a href="/" style="font-size: 1.5rem; font-weight: 800; text-decoration: none; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        {{ settings.site_name_small }}
+    </a>
+    <a href="/dashboard" style="color: #a5b4fc; text-decoration: none;">← Back to Dashboard</a>
+</nav>
+
+<div style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+    <div class="glass-card" style="padding: 30px;">
+        <h2 style="margin-bottom: 20px;">📦 My Orders</h2>
+        {% if orders %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr><th>Order ID</th><th>Plan</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.plan_name }}</td>
+                        <td>{{ order.price }}</td>
+                        <td><span class="badge {% if order.status == 'completed' %}badge-success{% elif order.status == 'pending' %}badge-warning{% else %}badge-info{% endif %}">{{ order.status|upper }}</span></td>
+                        <td>{{ order.created_at[:10] }}</td>
+                        <td>{% if order.status == 'pending' %}<button class="btn-outline" onclick="payNow('{{ order.id }}')">Pay Now</button>{% else %}-{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 40px;">
+            <i class="fas fa-shopping-cart" style="font-size: 3rem; color: #6b7280;"></i>
+            <p style="margin-top: 15px;">No orders yet.</p>
+            <a href="/vps-panel" class="btn-neon" style="margin-top: 15px; display: inline-block;">Browse Plans →</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+async function payNow(orderId) {
+    const result = await apiCall(`/api/confirm-order/${orderId}`, 'POST', {});
+    if (result.success) { showToast('Payment confirmed! Waiting for approval.'); setTimeout(() => location.reload(), 2000); }
+    else { showToast(result.message, 'error'); }
+}
+</script>
+{% endblock %}
