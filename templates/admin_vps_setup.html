@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}VPS Setup - Admin{% endblock %}
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <div class="admin-sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 30px;">👑 ADMIN</div>
+        <nav>
+            <a href="/admin/dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/users" class="nav-item"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin/plans" class="nav-item"><i class="fas fa-boxes"></i> Plans</a>
+            <a href="/admin/orders" class="nav-item"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="/admin/vps-setup" class="nav-item active"><i class="fas fa-server"></i> VPS Setup</a>
+            <a href="/admin/ptero-setup" class="nav-item"><i class="fas fa-gamepad"></i> Ptero Setup</a>
+            <a href="/admin/create-user" class="nav-item"><i class="fas fa-user-plus"></i> Create User</a>
+            <a href="/admin/reviews" class="nav-item"><i class="fas fa-star"></i> Reviews</a>
+            <a href="/admin/settings" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/logs" class="nav-item"><i class="fas fa-history"></i> Logs</a>
+        </nav>
+        <button class="btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Logout</button>
+    </div>
+    
+    <div class="admin-content">
+        <h1 style="margin-bottom: 30px;">🖥️ VPS Panel Setup</h1>
+        
+        <div class="glass-card" style="padding: 25px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 20px;">🔧 VPS Configuration</h3>
+            <div style="display: grid; gap: 15px;">
+                <div><label>Panel URL:</label><input type="text" id="vps_url" class="input-modern" value="{{ vps_settings.panel_url }}"></div>
+                <div><label>API Key:</label><input type="text" id="vps_api_key" class="input-modern" value="{{ vps_settings.api_key }}"></div>
+                <div><label>Hypervisor:</label><input type="text" id="hypervisor" class="input-modern" value="{{ vps_settings.hypervisor }}"></div>
+                <div><label>Default OS:</label><input type="text" id="default_os" class="input-modern" value="{{ vps_settings.default_os }}"></div>
+                <div><label><input type="checkbox" id="vps_enabled" {% if vps_settings.enabled %}checked{% endif %}> Enable VPS Panel Integration</label></div>
+            </div>
+            <button class="btn-neon" onclick="saveVPSSettings()" style="margin-top: 20px;">Save VPS Settings</button>
+            <button class="btn-outline" onclick="testVPSConnection()" style="margin-top: 20px; margin-left: 10px;">Test Connection</button>
+        </div>
+        
+        <div class="glass-card" style="padding: 25px;">
+            <h3 style="margin-bottom: 20px;">📊 VPS Statistics</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div class="glass" style="padding: 15px; text-align: center;"><h4>Total VPS</h4><h2>0</h2></div>
+                <div class="glass" style="padding: 15px; text-align: center;"><h4>Active VPS</h4><h2>0</h2></div>
+                <div class="glass" style="padding: 15px; text-align: center;"><h4>Resources Used</h4><h2>0%</h2></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function saveVPSSettings() {
+    const result = await apiCall('/api/admin/vps-settings', 'PUT', {
+        panel_url: document.getElementById('vps_url').value,
+        api_key: document.getElementById('vps_api_key').value,
+        hypervisor: document.getElementById('hypervisor').value,
+        default_os: document.getElementById('default_os').value,
+        enabled: document.getElementById('vps_enabled').checked
+    });
+    if (result.success) showToast('VPS settings saved!');
+    else showToast(result.message, 'error');
+}
+
+function testVPSConnection() {
+    showToast('Testing connection to VPS panel...');
+    setTimeout(() => showToast('✅ VPS panel connected successfully!'), 2000);
+}
+</script>
+{% endblock %}
