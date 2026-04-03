@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}API Keys - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(10,10,26,0.8);">
+    <a href="/" style="font-size: 1.5rem; font-weight: 800; text-decoration: none; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        {{ settings.site_name_small }}
+    </a>
+    <a href="/dashboard" style="color: #a5b4fc; text-decoration: none;">← Back to Dashboard</a>
+</nav>
+
+<div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    <div class="glass-card" style="padding: 30px;">
+        <h2 style="margin-bottom: 20px;">🔑 API Keys</h2>
+        <p style="margin-bottom: 30px; color: #9ca3af;">Use these keys to access our API services</p>
+        
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Main API Key</label>
+            <div class="glass" style="padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <code id="api_key">{{ api_keys.api_key or 'Not generated' }}</code>
+                <button class="btn-outline" onclick="regenerateKey('api_key')">Regenerate</button>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">💻 VPS API Key</label>
+            <div class="glass" style="padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <code id="vps_api_key">{{ api_keys.vps_api_key or 'Not generated' }}</code>
+                <button class="btn-outline" onclick="regenerateKey('vps_api_key')">Regenerate</button>
+           
