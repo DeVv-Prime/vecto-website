@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Manage Users - Admin{% endblock %}
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <div class="admin-sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 30px;">👑 ADMIN</div>
+        <nav>
+            <a href="/admin/dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/users" class="nav-item active"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin/plans" class="nav-item"><i class="fas fa-boxes"></i> Plans</a>
+            <a href="/admin/orders" class="nav-item"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="/admin/vps-setup" class="nav-item"><i class="fas fa-server"></i> VPS Setup</a>
+            <a href="/admin/ptero-setup" class="nav-item"><i class="fas fa-gamepad"></i> Ptero Setup</a>
+            <a href="/admin/create-user" class="nav-item"><i class="fas fa-user-plus"></i> Create User</a>
+            <a href="/admin/reviews" class="nav-item"><i class="fas fa-star"></i> Reviews</a>
+            <a href="/admin/settings" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/logs" class="nav-item"><i class="fas fa-history"></i> Logs</a>
+        </nav>
+        <button class="btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Logout</button>
+    </div>
+    
+    <div class="admin-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1>👥 User Management</h1>
+            <a href="/admin/create-user" class="btn-neon"><i class="fas fa-user-plus"></i> Create New User</a>
+        </div>
+        
+        <div class="glass-card" style="padding: 20px; overflow-x: auto;">
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Avatar</th><th>Username</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for email, user in users.items() %}
+                    <tr>
+                        <td style="font-size: 1.5rem;">{{ user.avatar }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ email }}</td>
+                        <td>
+                            <select class="input-modern" style="width: 100px; padding: 5px;" onchange="updateRole('{{ email }}', this.value)">
+                                <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </td>
+                        <td>{{ user.joined }}</td>
+                        <td>
+                            <button class="btn-outline" style="padding: 5px 10px;" onclick="toggleBan('{{ email }}', {{ user.banned|lower }})">
+                                {% if user.banned %}<span style="color: #ef4444;">Banned</span>{% else %}<span style="color: #10b981;">Active</span>{% endif %}
+                            </button>
+                        </td>
+                        <td>
+                            {% if email != 'admin@vecto.co' %}
+                            <button class="btn-outline" style="padding: 5px 10px; border-color: #ef4444; color: #ef4444;" onclick="deleteUser('{{ email }}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+async function updateRole(email, role) {
+    const result = await apiCall(`/api/admin/users/${email}`, 'PUT', { role: role });
+    if (result.success) showToast('Role updated!');
+    else showToast(result.message, 'error');
+}
+
+async function toggleBan(email, isBanned) {
+    const result = await apiCall(`/api/admin/users/${email}`, 'PUT', { banned: !isBanned });
+    if (result.success) { showToast('User status updated!'); setTimeout(() => location.reload(), 1000); }
+    else showToast(result.message, 'error');
+}
+
+async function deleteUser(email) {
+    if(confirm('Delete this user permanently?')) {
+        const result = await apiCall(`/api/admin/users/${email}`, 'DELETE', {});
+        if (result.success) { showToast('User deleted!'); setTimeout(() => location.reload(), 1000); }
+        else showToast(result.message, 'error');
+    }
+}
+</script>
+{% endblock %}
