@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}VPS Plans - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(10,10,26,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;">
+    <a href="/" style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">
+        💻 VPS PLANS
+    </a>
+    <div style="display: flex; gap: 20px;">
+        <a href="/dashboard" style="color: #a5b4fc; text-decoration: none;">← Back to Dashboard</a>
+        <button class="btn-outline" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div style="padding: 40px 5%; max-width: 1400px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 15px;">💻 Virtual Private Server Plans</h1>
+        <p style="color: #a5b4fc;">Enterprise-grade VPS hosting with 99.99% uptime guarantee</p>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+            <span class="badge badge-success"><i class="fas fa-check"></i> Full Root Access</span>
+            <span class="badge badge-success"><i class="fas fa-shield-alt"></i> DDoS Protection</span>
+            <span class="badge badge-success"><i class="fas fa-microchip"></i> AMD EPYC CPUs</span>
+            <span class="badge badge-success"><i class="fas fa-hdd"></i> NVMe SSD Storage</span>
+        </div>
+    </div>
+    
+    <!-- Basic VPS Section -->
+    <h2 style="margin: 40px 0 20px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-rocket" style="color: #6366f1;"></i> 🔹 Basic VPS (2GB - 8GB)</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom: 50px;">
+        {% for plan in vps_basic_plans if plan.enabled %}
+        <div class="glass-card plan-card" style="padding: 25px; position: relative; {% if plan.popular %}border: 2px solid #a855f7;{% endif %}">
+            {% if plan.popular %}<div class="popular-badge" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #a855f7, #6366f1); padding: 4px 16px; border-radius: 20px; font-size: 0.7rem;">🔥 MOST POPULAR</div>{% endif %}
+            <div style="font-size: 1.5rem; margin-bottom: 15px;">{{ plan.name }}</div>
+            <div style="font-size: 2rem; font-weight: 700;">{{ get_price_for_location(plan).price }}<span style="font-size: 0.9rem;">/month</span></div>
+            <div style="color: #10b981; font-size: 0.85rem; margin-bottom: 20px;">{{ settings.uptime_guarantee }} Uptime</div>
+            <ul class="feature-list" style="list-style: none; margin: 15px 0; padding: 0;">
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-microchip" style="width: 25px; color: #6366f1;"></i> {{ plan.cpu }}</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-memory" style="width: 25px; color: #6366f1;"></i> {{ plan.ram }} DDR5</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-hdd" style="width: 25px; color: #6366f1;"></i> {{ plan.storage }} NVMe</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-tachometer-alt" style="width: 25px; color: #6366f1;"></i> {{ plan.bandwidth }}</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-shield-alt" style="width: 25px; color: #10b981;"></i> DDoS Protection</li>
+                <li style="padding: 8px 0;"><i class="fas fa-map-marker-alt" style="width: 25px; color: #f59e0b;"></i> <span class="server-location">{{ get_location_name(plan.location) }}</span></li>
+            </ul>
+            <button class="btn-neon" style="width: 100%; margin-top: 15px;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'vps', '{{ plan.location }}')">Deploy Now 🚀</button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Powerful VPS Section -->
+    <h2 style="margin: 40px 0 20px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-bolt" style="color: #f59e0b;"></i> ⚡ Powerful VPS (12GB - 24GB)</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom: 50px;">
+        {% for plan in vps_powerful_plans if plan.enabled %}
+        <div class="glass-card plan-card" style="padding: 25px; position: relative; {% if plan.popular %}border: 2px solid #f59e0b;{% endif %}">
+            {% if plan.popular %}<div class="popular-badge" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #f59e0b, #ea580c); padding: 4px 16px; border-radius: 20px; font-size: 0.7rem;">⚡ POWERFUL</div>{% endif %}
+            <div style="font-size: 1.5rem; margin-bottom: 15px;">{{ plan.name }}</div>
+            <div style="font-size: 2rem; font-weight: 700;">{{ get_price_for_location(plan).price }}<span style="font-size: 0.9rem;">/month</span></div>
+            <div style="color: #10b981; font-size: 0.85rem; margin-bottom: 20px;">99.99% Uptime Guarantee</div>
+            <ul class="feature-list" style="list-style: none; margin: 15px 0; padding: 0;">
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-microchip" style="width: 25px; color: #f59e0b;"></i> {{ plan.cpu }}</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-memory" style="width: 25px; color: #f59e0b;"></i> {{ plan.ram }} DDR5 ECC</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-hdd" style="width: 25px; color: #f59e0b;"></i> {{ plan.storage }} NVMe</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-tachometer-alt" style="width: 25px; color: #f59e0b;"></i> {{ plan.bandwidth }}</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-shield-alt" style="width: 25px; color: #10b981;"></i> Enterprise DDoS Protection</li>
+                <li style="padding: 8px 0;"><i class="fas fa-map-marker-alt" style="width: 25px; color: #f59e0b;"></i> <span class="server-location">{{ get_location_name(plan.location) }}</span></li>
+            </ul>
+            <button class="btn-neon" style="width: 100%; margin-top: 15px;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'vps', '{{ plan.location }}')">Deploy Now 🚀</button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Elite VPS Section -->
+    <h2 style="margin: 40px 0 20px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-gem" style="color: #a855f7;"></i> 💎 Elite VPS (32GB - 256GB)</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom: 50px;">
+        {% for plan in vps_elite_plans if plan.enabled %}
+        <div class="glass-card plan-card" style="padding: 25px; position: relative; {% if plan.popular %}border: 2px solid #a855f7;{% endif %}">
+            {% if plan.popular %}<div class="popular-badge" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #a855f7, #7c3aed); padding: 4px 16px; border-radius: 20px; font-size: 0.7rem;">💎 ELITE</div>{% endif %}
+            <div style="font-size: 1.5rem; margin-bottom: 15px;">{{ plan.name }}</div>
+            <div style="font-size: 2rem; font-weight: 700;">{{ get_price_for_location(plan).price }}<span style="font-size: 0.9rem;">/month</span></div>
+            <div style="color: #10b981; font-size: 0.85rem; margin-bottom: 20px;">99.999% Uptime SLA</div>
+            <ul class="feature-list" style="list-style: none; margin: 15px 0; padding: 0;">
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-microchip" style="width: 25px; color: #a855f7;"></i> {{ plan.cpu }}</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-memory" style="width: 25px; color: #a855f7;"></i> {{ plan.ram }} DDR5 ECC</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-hdd" style="width: 25px; color: #a855f7;"></i> {{ plan.storage }} NVMe</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-tachometer-alt" style="width: 25px; color: #a855f7;"></i> {{ plan.bandwidth }}</li>
+                <li style="padding: 8px 0; border-bottom: 1px solid rgba(99,102,241,0.1);"><i class="fas fa-shield-alt" style="width: 25px; color: #10b981;"></i> Quantum DDoS Protection</li>
+                <li style="padding: 8px 0;"><i class="fas fa-map-marker-alt" style="width: 25px; color: #a855f7;"></i> <span class="server-location">{{ get_location_name(plan.location) }}</span></li>
+            </ul>
+            <button class="btn-neon" style="width: 100%; margin-top: 15px;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'vps', '{{ plan.location }}')">Deploy Now 🚀</button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Server Locations Info -->
+    <div class="glass" style="padding: 30px; margin-top: 40px; text-align: center;">
+        <h3 style="margin-bottom: 20px;">🌍 Global Server Locations</h3>
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            {% for loc in server_locations %}
+            <div><span style="font-size: 1.5rem;">{{ loc.flag }}</span><br>{{ loc.city }}<br><span class="badge badge-info">{{ loc.latency }}</span></div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 20px;">🛒 Confirm VPS Order</h2>
+        <div id="orderDetails"></div>
+        <div id="paymentMethods" style="margin: 20px 0;"></div>
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn-neon" onclick="confirmOrder()">Proceed to Payment ✅</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentOrder = null;
+
+function buyNow(planId, planName, planType, location) {
+    currentOrder = { planId, planName, planType, location };
+    document.getElementById('orderDetails').innerHTML = `
+        <p><strong>Plan:</strong> ${planName}</p>
+        <p><strong>Type:</strong> VPS Server</p>
+        <p><strong>Location:</strong> ${getLocationName(location)}</p>
+        <p><strong>Deployment:</strong> Instant (2-3 minutes)</p>
+    `;
+    document.getElementById('paymentMethods').innerHTML = `
+        <div style="background: rgba(99,102,241,0.1); padding: 15px; border-radius: 12px;">
+            <p><i class="fas fa-mobile-alt"></i> <strong>UPI:</strong> {{ payment_details.upi.id }}</p>
+            <p><i class="fas fa-university"></i> <strong>Bank Transfer:</strong> {{ payment_details.bank_transfer.account_name }}</p>
+            <p><i class="fab fa-bitcoin"></i> <strong>Crypto:</strong> BTC, ETH, LTC, USDT accepted</p>
+        </div>
+    `;
+    document.getElementById('cartModal').style.display = 'flex';
+}
+
+function getLocationName(locationId) {
+    const locations = {
+        'us_east': '🇺🇸 US East (Virginia)', 'us_west': '🇺🇸 US West (California)',
+        'eu_central': '🇪🇺 EU Central (Frankfurt)', 'asia_south': '🇮🇳 Asia South (Mumbai)',
+        'asia_east': '🇸🇬 Asia East (Singapore)', 'au_south': '🇦🇺 Australia (Sydney)'
+    };
+    return locations[locationId] || '🌍 Global';
+}
+
+async function confirmOrder() {
+    const result = await apiCall('/api/create-order', 'POST', {
+        plan_id: currentOrder.planId,
+        plan_name: currentOrder.planName,
+        plan_type: currentOrder.planType,
+        location: currentOrder.location
+    });
+    if (result.success) {
+        const confirm = await apiCall(`/api/confirm-order/${result.order_id}`, 'POST', {});
+        if (confirm.success) {
+            showToast('✅ Order placed! Waiting for admin approval.');
+            closeModal();
+            setTimeout(() => { window.location.href = '/dashboard'; }, 2000);
+        }
+    } else {
+        showToast(result.message || 'Error creating order', 'error');
+    }
+}
+
+function closeModal() {
+    document.getElementById('cartModal').style.display = 'none';
+    currentOrder = null;
+}
+</script>
+{% endblock %}
