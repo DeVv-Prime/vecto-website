@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Manage Orders - Admin{% endblock %}
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <div class="admin-sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 30px;">👑 ADMIN</div>
+        <nav>
+            <a href="/admin/dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/users" class="nav-item"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin/plans" class="nav-item"><i class="fas fa-boxes"></i> Plans</a>
+            <a href="/admin/orders" class="nav-item active"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="/admin/vps-setup" class="nav-item"><i class="fas fa-server"></i> VPS Setup</a>
+            <a href="/admin/ptero-setup" class="nav-item"><i class="fas fa-gamepad"></i> Ptero Setup</a>
+            <a href="/admin/create-user" class="nav-item"><i class="fas fa-user-plus"></i> Create User</a>
+            <a href="/admin/reviews" class="nav-item"><i class="fas fa-star"></i> Reviews</a>
+            <a href="/admin/settings" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/logs" class="nav-item"><i class="fas fa-history"></i> Logs</a>
+        </nav>
+        <button class="btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Logout</button>
+    </div>
+    
+    <div class="admin-content">
+        <h1 style="margin-bottom: 30px;">🛒 Order Management</h1>
+        
+        <div class="glass-card" style="padding: 20px; overflow-x: auto;">
+            <table style="width: 100%;">
+                <thead>
+                    <tr><th>Order ID</th><th>User</th><th>Plan</th><th>Amount</th><th>Location</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.user_email[:20] }}</td>
+                        <td>{{ order.plan_name[:25] }}</td>
+                        <td>{{ order.price }}</td>
+                        <td>{{ order.location or 'Global' }}</td>
+                        <td>{{ order.created_at[:10] }}</td>
+                        <td><span class="badge {% if order.status == 'completed' %}badge-success{% elif order.status == 'pending' %}badge-warning{% elif order.status == 'pending_approval' %}badge-info{% else %}badge-danger{% endif %}">{{ order.status }}</span></td>
+                        <td>
+                            <select id="status_{{ order.id }}" class="input-modern" style="width: 120px; padding: 5px;">
+                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="pending_approval" {% if order.status == 'pending_approval' %}selected{% endif %}>Payment Received</option>
+                                <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Approve & Deploy</option>
+                                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancel</option>
+                            </select>
+                            <button class="btn-neon" style="padding: 5px 10px; margin-left: 5px;" onclick="updateOrder('{{ order.id }}')">Update</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+async function updateOrder(orderId) {
+    const status = document.getElementById(`status_${orderId}`).value;
+    const result = await apiCall(`/api/admin/orders/${orderId}/status`, 'PUT', { status: status });
+    if (result.success) { showToast(`Order ${orderId} updated to ${status}`); setTimeout(() => location.reload(), 1000); }
+    else showToast(result.message, 'error');
+}
+</script>
+{% endblock %}
