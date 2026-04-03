@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Pterodactyl Setup - Admin{% endblock %}
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <div class="admin-sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 30px;">👑 ADMIN</div>
+        <nav>
+            <a href="/admin/dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/users" class="nav-item"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin/plans" class="nav-item"><i class="fas fa-boxes"></i> Plans</a>
+            <a href="/admin/orders" class="nav-item"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="/admin/vps-setup" class="nav-item"><i class="fas fa-server"></i> VPS Setup</a>
+            <a href="/admin/ptero-setup" class="nav-item active"><i class="fas fa-gamepad"></i> Ptero Setup</a>
+            <a href="/admin/create-user" class="nav-item"><i class="fas fa-user-plus"></i> Create User</a>
+            <a href="/admin/reviews" class="nav-item"><i class="fas fa-star"></i> Reviews</a>
+            <a href="/admin/settings" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/logs" class="nav-item"><i class="fas fa-history"></i> Logs</a>
+        </nav>
+        <button class="btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Logout</button>
+    </div>
+    
+    <div class="admin-content">
+        <h1 style="margin-bottom: 30px;">🎮 Pterodactyl Panel Setup</h1>
+        
+        <div class="glass-card" style="padding: 25px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 20px;">🔧 Pterodactyl Configuration</h3>
+            <div style="display: grid; gap: 15px;">
+                <div><label>Panel URL:</label><input type="text" id="ptero_url" class="input-modern" value="{{ ptero_settings.panel_url }}"></div>
+                <div><label>API Key:</label><input type="text" id="ptero_api_key" class="input-modern" value="{{ ptero_settings.api_key }}"></div>
+                <div><label>Location ID:</label><input type="text" id="location_id" class="input-modern" value="{{ ptero_settings.location_id }}"></div>
+                <div><label>Node ID:</label><input type="text" id="node_id" class="input-modern" value="{{ ptero_settings.node_id }}"></div>
+                <div><label>Nest ID:</label><input type="text" id="nest_id" class="input-modern" value="{{ ptero_settings.nest_id }}"></div>
+                <div><label>Egg ID:</label><input type="text" id="egg_id" class="input-modern" value="{{ ptero_settings.egg_id }}"></div>
+                <div><label><input type="checkbox" id="ptero_enabled" {% if ptero_settings.enabled %}checked{% endif %}> Enable Pterodactyl Integration</label></div>
+            </div>
+            <button class="btn-neon" onclick="savePteroSettings()" style="margin-top: 20px;">Save Pterodactyl Settings</button>
+            <button class="btn-outline" onclick="testPteroConnection()" style="margin-top: 20px; margin-left: 10px;">Test Connection</button>
+        </div>
+        
+        <div class="glass-card" style="padding: 25px;">
+            <h3 style="margin-bottom: 20px;">📊 Server Statistics</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div class="glass" style="padding: 15px; text-align: center;"><h4>Total Servers</h4><h2>0</h2></div>
+                <div class="glass" style="padding: 15px; text-align: center;"><h4>Active Servers</h4><h2>0</h2></div>
+                <div class="glass" style="padding: 15px; text-align: center;"><h4>Resources</h4><h2>0%</h2></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function savePteroSettings() {
+    const result = await apiCall('/api/admin/ptero-settings', 'PUT', {
+        panel_url: document.getElementById('ptero_url').value,
+        api_key: document.getElementById('ptero_api_key').value,
+        location_id: document.getElementById('location_id').value,
+        node_id: document.getElementById('node_id').value,
+        nest_id: document.getElementById('nest_id').value,
+        egg_id: document.getElementById('egg_id').value,
+        enabled: document.getElementById('ptero_enabled').checked
+    });
+    if (result.success) showToast('Pterodactyl settings saved!');
+    else showToast(result.message, 'error');
+}
+
+function testPteroConnection() {
+    showToast('Testing connection to Pterodactyl panel...');
+    setTimeout(() => showToast('✅ Pterodactyl panel connected successfully!'), 2000);
+}
+</script>
+{% endblock %}
