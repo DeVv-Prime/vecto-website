@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}500 - Server Error{% endblock %}
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+    <div>
+        <div style="font-size: 8rem; font-weight: 800; background: linear-gradient(135deg, #ef4444, #dc2626); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">500</div>
+        <h1 style="font-size: 2rem; margin: 20px 0;">Internal Server Error</h1>
+        <p style="color: #a5b4fc; margin-bottom: 30px;">Something went wrong on our end. Please try again later.</p>
+        <a href="/" class="btn-neon">Go Home →</a>
+    </div>
+</div>
+{% endblock %}
