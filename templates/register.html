@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Register - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="glass-card" style="max-width: 450px; width: 100%; padding: 40px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 3rem;">✨</div>
+            <h1 style="font-size: 2rem;">Create Account</h1>
+            <p style="color: #a5b4fc;">Start your journey with {{ settings.site_name }}</p>
+        </div>
+        <form id="registerForm">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Username</label>
+                <input type="text" id="username" class="input-modern" placeholder="TechGamer" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Email Address</label>
+                <input type="email" id="email" class="input-modern" placeholder="user@example.com" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Password</label>
+                <input type="password" id="password" class="input-modern" placeholder="Min. 6 characters" required>
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Confirm Password</label>
+                <input type="password" id="confirm_password" class="input-modern" placeholder="Confirm password" required>
+            </div>
+            <button type="submit" class="btn-neon" style="width: 100%;">Register →</button>
+        </form>
+        <p style="text-align: center; margin-top: 25px;">
+            Already have an account? <a href="/login" style="color: #a855f7; text-decoration: none;">Sign in</a>
+        </p>
+    </div>
+</div>
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    if (password !== confirm) { showToast('Passwords do not match', 'error'); return; }
+    if (password.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+    const result = await apiCall('/api/register', 'POST', {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: password,
+        confirm_password: confirm
+    });
+    if (result.success) { showToast('Registration successful!'); setTimeout(() => { window.location.href = '/login'; }, 1500); }
+    else { showToast(result.message, 'error'); }
+});
+</script>
+{% endblock %}
