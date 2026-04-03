@@ -61,4 +61,42 @@
 <script>
 async function updateSettings() {
     const result = await apiCall('/api/admin/website-settings', 'PUT', {
-        site_name: document.getElementById('site_name
+        site_name: document.getElementById('site_name').value,
+        slogan: document.getElementById('slogan').value,
+        description: document.getElementById('description').value,
+        uptime_guarantee: document.getElementById('uptime_guarantee').value,
+        footer_text: document.getElementById('footer_text').value,
+        discord_invite: document.getElementById('discord_invite').value
+    });
+    if (result.success) showToast('Settings saved!');
+    else showToast(result.message, 'error');
+}
+
+async function updatePaymentSettings() {
+    const result = await apiCall('/api/admin/payment-details', 'PUT', {
+        upi: { id: document.getElementById('upi_id').value },
+        bank_transfer: {
+            account_name: document.getElementById('bank_name').value,
+            account_number: document.getElementById('bank_number').value,
+            ifsc_code: document.getElementById('ifsc').value
+        },
+        crypto: {
+            bitcoin: document.getElementById('btc').value,
+            litecoin: document.getElementById('ltc').value
+        }
+    });
+    if (result.success) showToast('Payment settings saved!');
+    else showToast(result.message, 'error');
+}
+
+async function toggleFeatures() {
+    const result = await apiCall('/api/admin/website-settings', 'PUT', {
+        cart_system_enabled: document.getElementById('cart_enabled').checked,
+        registration_enabled: document.getElementById('registration_enabled').checked,
+        maintenance_mode: document.getElementById('maintenance_mode').checked
+    });
+    if (result.success) showToast('Features updated!');
+    else showToast(result.message, 'error');
+}
+</script>
+{% endblock %}
