@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block title %}{{ settings.site_name }} - The Strongest Hosting Platform{% endblock %}
+{% block content %}
+<div style="background: linear-gradient(135deg, #6366f1, #a855f7); padding: 8px; text-align: center; font-size: 0.85rem; font-weight: 500;">
+    <span>✨ {{ settings.uptime_guarantee }} UPTIME GUARANTEE • INSTANT DEPLOYMENT • 24/7 SUPPORT ✨</span>
+</div>
+
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; max-width: 1400px; margin: 0 auto;">
+    <a href="/" style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #6366f1, #a855f7, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">
+        {{ settings.site_name }}
+    </a>
+    <div style="display: flex; gap: 20px; align-items: center;">
+        <a href="/vps-panel" style="color: #a5b4fc; text-decoration: none;">💻 VPS</a>
+        <a href="/mc-panel" style="color: #a5b4fc; text-decoration: none;">🎮 MC</a>
+        <a href="/bot-panel" style="color: #a5b4fc; text-decoration: none;">🤖 Bot</a>
+        <a href="/discord-panel" style="color: #a5b4fc; text-decoration: none;">💎 Nitro</a>
+        <a href="/login" class="btn-outline" style="text-decoration: none;">Login</a>
+        <a href="/register" class="btn-neon" style="text-decoration: none;">Get Started</a>
+    </div>
+</nav>
+
+<section style="text-align: center; padding: 60px 20px 80px; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(99,102,241,0.15), transparent); pointer-events: none;"></div>
+    <div style="position: relative; z-index: 1;">
+        <div style="display: inline-block; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.5); border-radius: 40px; padding: 6px 16px; font-size: 0.8rem; margin-bottom: 20px;">
+            🚀 Server running live • {{ settings.uptime_guarantee }} Uptime
+        </div>
+        <h1 style="font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 800; margin-bottom: 20px; background: linear-gradient(135deg, #fff, #a5b4fc, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            {{ settings.slogan }}
+        </h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.2rem); color: #a5b4fc; max-width: 700px; margin: 0 auto 30px;">
+            {{ settings.description }}
+        </p>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <a href="/register" class="btn-neon" style="text-decoration: none;">Deploy Now 🚀</a>
+            <a href="#vps" class="btn-outline" style="text-decoration: none;">View Plans →</a>
+        </div>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 50px;">
+            <div class="glass" style="padding: 8px 20px;"><i class="fas fa-shield-alt"></i> DDoS Protection</div>
+            <div class="glass" style="padding: 8px 20px;"><i class="fas fa-bolt"></i> Instant Setup</div>
+            <div class="glass" style="padding: 8px 20px;"><i class="fas fa-microchip"></i> NVMe SSD</div>
+            <div class="glass" style="padding: 8px 20px;"><i class="fas fa-sync-alt"></i> Fast Recovery</div>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px;">
+        <div class="glass-card stat-card"><i class="fas fa-server" style="color: #6366f1;"></i><h3>{{ settings.uptime_guarantee }}</h3><p>Uptime Guarantee</p></div>
+        <div class="glass-card stat-card"><i class="fas fa-tachometer-alt" style="color: #a855f7;"></i><h3>10x</h3><p>Faster Performance</p></div>
+        <div class="glass-card stat-card"><i class="fas fa-headset" style="color: #06b6d4;"></i><h3>24/7</h3><p>Expert Support</p></div>
+        <div class="glass-card stat-card"><i class="fas fa-globe" style="color: #10b981;"></i><h3>6+</h3><p>Global Locations</p></div>
+    </div>
+</section>
+
+<!-- VPS Plans Section -->
+<section id="vps" style="padding: 60px 5%; max-width: 1400px; margin: 0 auto;">
+    <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 15px;">💻 VPS Plans</h2>
+    <p style="text-align: center; color: #a5b4fc; margin-bottom: 50px;">Choose your perfect VPS configuration</p>
+    
+    <h3 style="margin: 40px 0 20px;">🔹 Basic VPS (2GB - 8GB)</h3>
+    <div class="pricing-table">
+        {% for plan in vps_basic_plans if plan.enabled %}
+        <div class="glass-card plan-card pricing-card">
+            {% if plan.popular %}<div class="popular-badge">🔥 POPULAR</div>{% endif %}
+            <div style="font-size: 1.5rem; margin-bottom: 15px;">{{ plan.name }}</div>
+            <div style="font-size: 2rem; font-weight: 700;">{{ get_price_for_location(plan).price }}<span style="font-size: 0.9rem;">/mo</span></div>
+            <ul class="feature-list">
+                <li><i class="fas fa-microchip"></i> {{ plan.cpu }}</li>
+                <li><i class="fas fa-memory"></i> {{ plan.ram }}</li>
+                <li><i class="fas fa-hdd"></i> {{ plan.storage }}</li>
+                <li><i class="fas fa-tachometer-alt"></i> {{ plan.bandwidth }}</li>
+                <li><i class="fas fa-map-marker-alt"></i> <span class="server-location">{{ get_location_name(plan.location) }}</span></li>
+            </ul>
+            <button class="btn-neon" style="width: 100%;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'vps', '{{ plan.location }}')">Buy Now 🛒</button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <h3 style="margin: 40px 0 20px;">⚡ Powerful VPS (12GB - 24GB)</h3>
+    <div class="pricing-table">
+        {% for plan in vps_powerful_plans if plan.enabled %}
+        <div class="glass-card plan-card pricing-card">
+            {% if plan.popular %}<div class="popular-badge">🔥 POPULAR</div>{% endif %}
+            <div style="font-size: 1.5rem;">{{ plan.name }}</div>
+            <div style="font-size: 2rem; font-weight: 700;">{{ get_price_for_location(plan).price }}<span style="font-size: 0.9rem;">/mo</span></div>
+            <ul class="feature-list">
+                <li><i class="fas fa-microchip"></i> {{ plan.cpu }}</li>
+                <li><i class="fas fa-memory"></i> {{ plan.ram }}</li>
+                <li><i class="fas fa-hdd"></i> {{ plan.storage }}</li>
+                <li><i class="fas fa-tachometer-alt"></i> {{ plan.bandwidth }}</li>
+                <li><i class="fas fa-map-marker-alt"></i> <span class="server-location">{{ get_location_name(plan.location) }}</span></li>
+            </ul>
+            <button class="btn-neon" style="width: 100%;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'vps', '{{ plan.location }}')">Buy Now 🛒</button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <h3 style="margin: 40px 0 20px;">💎 Elite VPS (32GB - 256GB)</h3>
+    <div class="pricing-table">
+        {% for plan in vps_elite_plans if plan.enabled %}
+        <div class="glass-card plan-card pricing-card">
+            {% if plan.popular %}<div class="popular-badge">🔥 POPULAR</div>{% endif %}
+            <div style="font-size: 1.5rem;">{{ plan.name }}</div>
+            <div style="font-size: 2rem; font-weight: 700;">{{ get_price_for_location(plan).price }}<span style="font-size: 0.9rem;">/mo</span></div>
+            <ul class="feature-list">
+                <li><i class="fas fa-microchip"></i> {{ plan.cpu }}</li>
+                <li><i class="fas fa-memory"></i> {{ plan.ram }}</li>
+                <li><i class="fas fa-hdd"></i> {{ plan.storage }}</li>
+                <li><i class="fas fa-tachometer-alt"></i> {{ plan.bandwidth }}</li>
+                <li><i class="fas fa-map-marker-alt"></i> <span class="server-location">{{ get_location_name(plan.location) }}</span></li>
+            </ul>
+            <button class="btn-neon" style="width: 100%;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'vps', '{{ plan.location }}')">Buy Now 🛒</button>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- MC Plans -->
+<section style="padding: 60px 5%; background: rgba(99,102,241,0.05);">
+    <h2 style="text-align: center; font-size: 2rem;">🎮 Minecraft Plans</h2>
+    <div class="pricing-table" style="max-width: 1200px; margin: 40px auto;">
+        {% for plan in mc_plans if plan.enabled %}
+        <div class="glass-card plan-card pricing-card">
+            {% if plan.popular %}<div class="popular-badge">🔥 POPULAR</div>{% endif %}
+            <div style="font-size: 1.5rem;">{{ plan.name }}</div>
+            <div style="font-size: 2rem; font-weight: 700;">{{ get_price_for_location(plan).price }}/mo</div>
+            <ul class="feature-list">
+                <li><i class="fas fa-microchip"></i> {{ plan.cpu }}</li>
+                <li><i class="fas fa-memory"></i> {{ plan.ram }}</li>
+                <li><i class="fas fa-hdd"></i> {{ plan.storage }}</li>
+                <li><i class="fas fa-users"></i> {{ plan.slots }} Slots</li>
+                <li><i class="fas fa-map-marker-alt"></i> <span class="server-location">{{ get_location_name(plan.location) }}</span></li>
+            </ul>
+            <button class="btn-neon" style="width: 100%;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'mc', '{{ plan.location }}')">Buy Now 🛒</button>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Bot & Discord Plans -->
+<section style="padding: 60px 5%; max-width: 1200px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+        <div>
+            <h2 style="text-align: center;">🤖 Bot Plans</h2>
+            {% for plan in bot_plans if plan.enabled %}
+            <div class="glass-card plan-card" style="margin-top: 20px;">
+                <div style="font-size: 1.3rem;">{{ plan.name }}</div>
+                <div style="font-size: 1.5rem; font-weight: 700;">{{ get_price_for_location(plan).price }}/mo</div>
+                <ul class="feature-list">
+                    <li><i class="fas fa-microchip"></i> {{ plan.cpu }}</li>
+                    <li><i class="fas fa-memory"></i> {{ plan.ram }}</li>
+                    <li><i class="fas fa-hdd"></i> {{ plan.storage }}</li>
+                    <li><i class="fas fa-robot"></i> {{ plan.servers }} Servers</li>
+                </ul>
+                <button class="btn-neon" style="width: 100%;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'bot', '{{ plan.location }}')">Buy Now</button>
+            </div>
+            {% endfor %}
+        </div>
+        <div>
+            <h2 style="text-align: center;">💎 Discord Nitro</h2>
+            {% for plan in discord_plans if plan.enabled %}
+            <div class="glass-card plan-card" style="margin-top: 20px;">
+                <div style="font-size: 1.3rem;">{{ plan.name }}</div>
+                <div style="font-size: 1.5rem; font-weight: 700;">{{ get_price_for_location(plan).price }}</div>
+                <div style="color: #9ca3af; font-size: 0.85rem;">{{ plan.features }}</div>
+                <div style="margin-top: 10px;"><span class="badge badge-info">{{ plan.duration }}</span></div>
+                <button class="btn-neon" style="width: 100%; margin-top: 15px;" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'discord', '')">Buy Now</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Server Locations -->
+<section style="padding: 60px 5%; background: rgba(99,102,241,0.05);">
+    <h2 style="text-align: center; font-size: 2rem;">🌍 Global Server Locations</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin: 40px auto;">
+        {% for loc in server_locations %}
+        <div class="glass-card" style="padding: 20px; text-align: center;">
+            <div style="font-size: 3rem;">{{ loc.flag }}</div>
+            <div><strong>{{ loc.name }}</strong></div>
+            <div style="color: #9ca3af; font-size: 0.85rem;">{{ loc.city }}, {{ loc.country }}</div>
+            <div><span class="badge badge-success">⚡ {{ loc.latency }}</span></div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section style="padding: 60px 5%;">
+    <h2 style="text-align: center; font-size: 2rem;">⭐ Trusted by Developers</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1200px; margin: 40px auto;">
+        {% for review in reviews[:6] %}
+        <div class="glass-card" style="padding: 25px;">
+            <div>{% for i in range(review.rating) %}⭐{% endfor %}</div>
+            <p style="margin: 15px 0;">"{{ review.comment }}"</p>
+            <div><strong>{{ review.user_name }}</strong> • {{ review.product }}</div>
+            <div style="font-size: 0.75rem; color: #6b7280; margin-top: 10px;">Verified Purchase ✓</div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Payment Methods -->
+<section style="padding: 60px 5%; background: rgba(99,102,241,0.05);">
+    <h2 style="text-align: center; font-size: 2rem;">💳 Secure Payment Methods</h2>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px;">
+        {% if payment_details.upi.enabled %}<div class="glass-card" style="padding: 20px; text-align: center;"><i class="fas fa-mobile-alt" style="font-size: 2rem; color: #6366f1;"></i><div>UPI</div><div style="font-size: 0.8rem;">{{ payment_details.upi.id }}</div></div>{% endif %}
+        {% if payment_details.bank_transfer.enabled %}<div class="glass-card" style="padding: 20px; text-align: center;"><i class="fas fa-university" style="font-size: 2rem; color: #10b981;"></i><div>Bank Transfer</div></div>{% endif %}
+        {% if payment_details.crypto.enabled %}<div class="glass-card" style="padding: 20px; text-align: center;"><i class="fab fa-bitcoin" style="font-size: 2rem; color: #f59e0b;"></i><div>Crypto</div><div style="font-size: 0.7rem;">BTC • ETH • LTC</div></div>{% endif %}
+    </div>
+</section>
+
+<footer style="padding: 50px 5% 30px; border-top: 1px solid rgba
