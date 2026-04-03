@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Discord Nitro - {{ settings.site_name }}{% endblock %}
+{% block content %}
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(10,10,26,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;">
+    <a href="/" style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #5865f2, #404eed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">
+        💎 DISCORD NITRO
+    </a>
+    <div style="display: flex; gap: 20px;">
+        <a href="/dashboard" style="color: #a5b4fc; text-decoration: none;">← Back to Dashboard</a>
+        <button class="btn-outline" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 15px;">💎 Discord Nitro & Boosts</h1>
+        <p style="color: #a5b4fc;">Get Discord Nitro at the best prices with instant delivery</p>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+            <span class="badge badge-success"><i class="fas fa-check"></i> Instant Delivery</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> 24/7 Support</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> Best Prices</span>
+            <span class="badge badge-success"><i class="fas fa-check"></i> Warranty Included</span>
+        </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        {% for plan in discord_plans if plan.enabled %}
+        <div class="glass-card plan-card" style="padding: 30px; position: relative; text-align: center; {% if plan.popular %}border: 2px solid #5865f2;{% endif %}">
+            {% if plan.popular %}<div class="popular-badge" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #5865f2, #404eed); padding: 4px 16px; border-radius: 20px; font-size: 0.7rem;">🔥 BEST VALUE</div>{% endif %}
+            
+            <div style="font-size: 3rem; margin-bottom: 15px;">
+                {% if 'basic' in plan.id %}💎
+                {% elif 'pro' in plan.id %}✨
+                {% elif 'trial' in plan.id %}🎁
+                {% else %}🎯{% endif %}
+            </div>
+            <div style="font-size: 1.8rem; font-weight: 700;">{{ plan.name }}</div>
+            <div style="font-size: 2.5rem; font-weight: 800; margin: 15px 0;">{{ get_price_for_location(plan).price }}</div>
+            <div class="badge badge-info" style="margin-bottom: 20px;">{{ plan.duration }}</div>
+            
+            <ul class="feature-list" style="list-style: none; text-align: left; margin: 20px 0; padding: 0;">
+                {% for feature in plan.features.split(', ') %}
+                <li style="padding: 8px 0;"><i class="fas fa-check-circle" style="color: #5865f2; width: 25px;"></i> {{ feature }}</li>
+                {% endfor %}
+            </ul>
+            
+            <div style="background: rgba(88,101,242,0.1); padding: 12px; border-radius: 12px; margin: 15px 0;">
+                <p style="font-size: 0.85rem;"><i class="fas fa-bolt" style="color: #5865f2;"></i> Instant delivery to your Discord account</p>
+            </div>
+            
+            <button class="btn-neon" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #5865f2, #404eed);" onclick="buyNow('{{ plan.id }}', '{{ plan.name }}', 'discord', '')">
+                Buy Now 🛒
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- How It Works -->
+    <div class="glass" style="padding: 40px; margin-top: 50px;">
+        <h3 style="text-align: center; margin-bottom: 30px;">📋 How It Works</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; text-align: center;">
+            <div><div style="font-size: 2rem; background: rgba(88,101,242,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">1</div><h4>Choose Plan</h4><p style="font-size: 0.85rem;">Select your Nitro plan</p></div>
+            <div><div style="font-size: 2rem; background: rgba(88,101,242,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">2</div><h4>Make Payment</h4><p style="font-size: 0.85rem;">Pay via UPI/Bank/Crypto</p></div>
+            <div><div style="font-size: 2rem; background: rgba(88,101,242,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">3</div><h4>Send Discord ID</h4><p style="font-size: 0.85rem;">Provide your Discord username</p></div>
+            <div><div style="font-size: 2rem; background: rgba(88,101,242,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">4</div><h4>Get Nitro</h4><p style="font-size: 0.85rem;">Instant delivery to your account</p></div>
+        </div>
+    </div>
+    
+    <!-- FAQ -->
+    <div class="glass" style="padding: 30px; margin-top: 30px;">
+        <h3 style="text-align: center; margin-bottom: 20px;">❓ Frequently Asked Questions</h3>
+        <div style="display: grid; gap: 15px;">
+            <div><details><summary>How long does delivery take?</summary><p style="margin-top: 10px;">Delivery is instant after payment confirmation (usually within 5-10 minutes).</p></details></div>
+            <div><details><summary>Is this safe?</summary><p style="margin-top: 10px;">Yes, we use secure methods and offer warranty on all Nitro purchases.</p></details></div>
+            <div><details><summary>What payment methods are accepted?</summary><p style="margin-top: 10px;">We accept UPI, Bank Transfer, and Cryptocurrency (BTC, ETH, LTC, USDT).</p></details></div>
+        </div>
+    </div>
+</div>
+
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 20px;">💎 Confirm Nitro Order</h2>
+        <div id="orderDetails"></div>
+        <div style="margin: 20px 0;">
+            <label>Discord Username (ID):</label>
+            <input type="text" id="discord_username" class="input-modern" placeholder="username#0000" style="margin-top: 10px;">
+        </div>
+        <div id="paymentMethods" style="margin: 20px 0;"></div>
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn-neon" onclick="confirmOrder()">Proceed to Payment ✅</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentOrder = null;
+
+function buyNow(planId, planName, planType, location) {
+    currentOrder = { planId, planName, planType, location };
+    document.getElementById('orderDetails').innerHTML = `
+        <p><strong>Plan:</strong> ${planName}</p>
+        <p><strong>Type:</strong> Discord Nitro</p>
+        <p><strong>Delivery:</strong> Instant after payment</p>
+    `;
+    document.getElementById('paymentMethods').innerHTML = `
+        <div style="background: rgba(99,102,241,0.1); padding: 15px; border-radius: 12px;">
+            <p><i class="fas fa-mobile-alt"></i> <strong>UPI:</strong> {{ payment_details.upi.id }}</p>
+            <p><i class="fas fa-university"></i> <strong>Bank Transfer:</strong> {{ payment_details.bank_transfer.account_name }}</p>
+            <p><i class="fab fa-bitcoin"></i> <strong>Crypto:</strong> BTC, ETH, LTC, USDT accepted</p>
+        </div>
+    `;
+    document.getElementById('cartModal').style.display = 'flex';
+}
+
+async function confirmOrder() {
+    const discordUsername = document.getElementById('discord_username')?.value || 'Not provided';
+    
+    const result = await apiCall('/api/create-order', 'POST', {
+        plan_id: currentOrder.planId,
+        plan_name: currentOrder.planName,
+        plan_type: currentOrder.planType,
+        location: currentOrder.location,
+        discord_username: discordUsername
+    });
+    if (result.success) {
+        const confirm = await apiCall(`/api/confirm-order/${result.order_id}`, 'POST', {});
+        if (confirm.success) {
+            showToast('✅ Nitro ordered! Our team will deliver shortly.');
+            closeModal();
+            setTimeout(() => { window.location.href = '/dashboard'; }, 2000);
+        }
+    } else {
+        showToast(result.message || 'Error creating order', 'error');
+    }
+}
+
+function closeModal() {
+    document.getElementById('cartModal').style.display = 'none';
+    currentOrder = null;
+}
+</script>
+{% endblock %}
