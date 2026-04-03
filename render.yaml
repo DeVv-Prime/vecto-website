@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: vecto-nodes
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:10000 --workers 2 --threads 2 --timeout 120 app:app
