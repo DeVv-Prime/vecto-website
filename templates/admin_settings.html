@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Settings - Admin{% endblock %}
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <div class="admin-sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 30px;">👑 ADMIN</div>
+        <nav>
+            <a href="/admin/dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/users" class="nav-item"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin/plans" class="nav-item"><i class="fas fa-boxes"></i> Plans</a>
+            <a href="/admin/orders" class="nav-item"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="/admin/vps-setup" class="nav-item"><i class="fas fa-server"></i> VPS Setup</a>
+            <a href="/admin/ptero-setup" class="nav-item"><i class="fas fa-gamepad"></i> Ptero Setup</a>
+            <a href="/admin/create-user" class="nav-item"><i class="fas fa-user-plus"></i> Create User</a>
+            <a href="/admin/reviews" class="nav-item"><i class="fas fa-star"></i> Reviews</a>
+            <a href="/admin/settings" class="nav-item active"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/logs" class="nav-item"><i class="fas fa-history"></i> Logs</a>
+        </nav>
+        <button class="btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Logout</button>
+    </div>
+    
+    <div class="admin-content">
+        <h1 style="margin-bottom: 30px;">⚙️ Website Settings</h1>
+        
+        <div class="glass-card" style="padding: 25px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 20px;">🌐 General Settings</h3>
+            <div style="display: grid; gap: 15px;">
+                <div><label>Site Name:</label><input type="text" id="site_name" class="input-modern" value="{{ settings.site_name }}"></div>
+                <div><label>Slogan:</label><input type="text" id="slogan" class="input-modern" value="{{ settings.slogan }}"></div>
+                <div><label>Description:</label><textarea id="description" class="input-modern" rows="3">{{ settings.description }}</textarea></div>
+                <div><label>Uptime Guarantee:</label><input type="text" id="uptime_guarantee" class="input-modern" value="{{ settings.uptime_guarantee }}"></div>
+                <div><label>Footer Text:</label><input type="text" id="footer_text" class="input-modern" value="{{ settings.footer_text }}"></div>
+                <div><label>Discord Invite:</label><input type="text" id="discord_invite" class="input-modern" value="{{ settings.discord_invite }}"></div>
+            </div>
+            <button class="btn-neon" onclick="updateSettings()" style="margin-top: 20px;">Save Changes</button>
+        </div>
+        
+        <div class="glass-card" style="padding: 25px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 20px;">💳 Payment Settings</h3>
+            <div><label>UPI ID:</label><input type="text" id="upi_id" class="input-modern" value="{{ payment_details.upi.id }}"></div>
+            <div style="margin-top: 10px;"><label>Bank Account Name:</label><input type="text" id="bank_name" class="input-modern" value="{{ payment_details.bank_transfer.account_name }}"></div>
+            <div style="margin-top: 10px;"><label>Bank Account Number:</label><input type="text" id="bank_number" class="input-modern" value="{{ payment_details.bank_transfer.account_number }}"></div>
+            <div style="margin-top: 10px;"><label>IFSC Code:</label><input type="text" id="ifsc" class="input-modern" value="{{ payment_details.bank_transfer.ifsc_code }}"></div>
+            <div style="margin-top: 10px;"><label>Bitcoin Address:</label><input type="text" id="btc" class="input-modern" value="{{ payment_details.crypto.bitcoin }}"></div>
+            <div style="margin-top: 10px;"><label>Litecoin Address:</label><input type="text" id="ltc" class="input-modern" value="{{ payment_details.crypto.litecoin }}"></div>
+            <button class="btn-neon" onclick="updatePaymentSettings()" style="margin-top: 20px;">Save Payment Settings</button>
+        </div>
+        
+        <div class="glass-card" style="padding: 25px;">
+            <h3 style="margin-bottom: 20px;">🔘 Toggle Features</h3>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <label><input type="checkbox" id="cart_enabled" {% if settings.cart_system_enabled %}checked{% endif %}> Cart System</label>
+                <label><input type="checkbox" id="registration_enabled" {% if settings.registration_enabled %}checked{% endif %}> User Registration</label>
+                <label><input type="checkbox" id="maintenance_mode" {% if settings.maintenance_mode %}checked{% endif %}> Maintenance Mode</label>
+            </div>
+            <button class="btn-neon" onclick="toggleFeatures()" style="margin-top: 20px;">Save Toggles</button>
+        </div>
+    </div>
+</div>
+
+<script>
+async function updateSettings() {
+    const result = await apiCall('/api/admin/website-settings', 'PUT', {
+        site_name: document.getElementById('site_name
