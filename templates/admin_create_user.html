@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Create User - Admin{% endblock %}
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <div class="admin-sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 30px;">👑 ADMIN</div>
+        <nav>
+            <a href="/admin/dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/users" class="nav-item"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin/plans" class="nav-item"><i class="fas fa-boxes"></i> Plans</a>
+            <a href="/admin/orders" class="nav-item"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="/admin/vps-setup" class="nav-item"><i class="fas fa-server"></i> VPS Setup</a>
+            <a href="/admin/ptero-setup" class="nav-item"><i class="fas fa-gamepad"></i> Ptero Setup</a>
+            <a href="/admin/create-user" class="nav-item active"><i class="fas fa-user-plus"></i> Create User</a>
+            <a href="/admin/reviews" class="nav-item"><i class="fas fa-star"></i> Reviews</a>
+            <a href="/admin/settings" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/logs" class="nav-item"><i class="fas fa-history"></i> Logs</a>
+        </nav>
+        <button class="btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Logout</button>
+    </div>
+    
+    <div class="admin-content">
+        <div class="glass-card" style="max-width: 600px; margin: 0 auto; padding: 40px;">
+            <h1 style="margin-bottom: 30px; text-align: center;">👤 Create New User</h1>
+            
+            <form id="createUserForm">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px;">Username</label>
+                    <input type="text" id="username" class="input-modern" placeholder="Enter username" required>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px;">Email Address</label>
+                    <input type="email" id="email" class="input-modern" placeholder="user@example.com" required>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px;">Password</label>
+                    <input type="password" id="password" class="input-modern" placeholder="Min. 6 characters" required>
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; margin-bottom: 8px;">Role</label>
+                    <select id="role" class="input-modern">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-neon" style="width: 100%;">Create User →</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('createUserForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = document.getElementById('password').value;
+    if (password.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+    
+    const result = await apiCall('/api/admin/users', 'POST', {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: password,
+        role: document.getElementById('role').value
+    });
+    if (result.success) { showToast('User created successfully!'); setTimeout(() => { window.location.href = '/admin/users'; }, 1500); }
+    else { showToast(result.message, 'error'); }
+});
+</script>
+{% endblock %}
